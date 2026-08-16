@@ -1,6 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// In development, use /api proxy; in production, use the env var or direct URL
+const API_BASE_URL = (() => {
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  return import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
+})();
 
 export interface Review {
   id: string;

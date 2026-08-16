@@ -7,7 +7,7 @@ from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthenticationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import os
 
 # Configuration
@@ -48,7 +48,7 @@ def create_access_token(
     return encoded_jwt
 
 
-def verify_token(credentials: HTTPAuthenticationCredentials = Depends(security)) -> str:
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)) -> str:
     """Verify JWT token from Authorization header."""
     token = credentials.credentials
     

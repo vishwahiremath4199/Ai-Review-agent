@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
 
-from .database import get_db, init_db
+from .database import get_db, init_db, SessionLocal
 from .models import User
 from .schemas import LoginSchema, TokenSchema
 from .auth import verify_password, get_password_hash, create_access_token
@@ -15,6 +15,16 @@ from .routers import reviews, rules, analytics
 
 # Initialize database
 init_db()
+
+# Seed demo user for local development
+with SessionLocal() as db:
+    if not db.query(User).filter(User.email == "demo@example.com").first():
+        demo_user = User(
+            email="demo@example.com",
+            password_hash=get_password_hash("demo"),
+        )
+        db.add(demo_user)
+        db.commit()
 
 # Create FastAPI app
 app = FastAPI(
@@ -24,9 +34,12 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+cors_origins = [o.strip() for o in cors_origins]  # Clean up whitespace
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.environ.get("CORS_ORIGINS", "*").split(","),
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
