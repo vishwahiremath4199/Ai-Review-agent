@@ -1,0 +1,49 @@
+version: 1
+
+general_instructions: >
+  Review this PR diff like a senior software engineer. Identify the type of
+  change (authentication, database/schema, API endpoint, frontend/UI,
+  infrastructure, etc.) from the files touched and code content, and apply
+  relevant best practices for that domain even if not explicitly listed below.
+  Always check for security issues, obvious bugs, and missing error handling
+  regardless of category.
+
+rules:
+  - match: "**/auth/**"
+    category: security
+    checks:
+      - "Passwords must never be stored or logged in plaintext"
+      - "JWT tokens must have an expiry set"
+      - "Session/token secrets must not be hardcoded"
+      - "Rate limiting should be considered on login/auth endpoints"
+
+  - match: "**/models/**"
+    category: database
+    checks:
+      - "New foreign key columns should have an index"
+      - "Avoid nullable fields without a sensible default"
+      - "Migrations must be reversible (include downgrade logic)"
+
+  - match: "**/*.py"
+    category: code_quality
+    checks:
+      - "No bare `except:` clauses"
+      - "Public functions should have docstrings"
+      - "Avoid functions longer than ~50 lines; suggest splitting"
+
+  - match: "**/*.tsx"
+    category: frontend
+    checks:
+      - "Interactive elements must have accessible labels (aria-label or text)"
+      - "Avoid inline styles where a Tailwind utility exists"
+
+  - match: "**/*"
+    category: testing
+    checks:
+      - "New functions/endpoints should have corresponding tests"
+      - "PR should not obviously decrease test coverage"
+
+severity_guidance:
+  critical: "Security vulnerabilities, data loss risk, breaking changes"
+  warning: "Bugs, missing error handling, missing tests"
+  suggestion: "Style, naming, minor refactors"
