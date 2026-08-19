@@ -1,0 +1,47 @@
+name: Reusable AI Code Review
+
+on:
+  workflow_call:
+    secrets:
+      ANTHROPIC_API_KEY:
+        required: true
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout AI Review Agent
+        uses: actions/checkout@v4
+        with:
+          repository: vishwahiremath4199/Ai-Review-agent
+          path: ai-review-agent
+          ref: test-ai-review
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r ai-review-agent/review-agent/requirements.txt
+
+      - name: Copy review rules
+        run: |
+          cp ai-review-agent/review-rules.yaml .
+
+      - name: Run AI review
+        run: python ai-review-agent/review-agent/main.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
