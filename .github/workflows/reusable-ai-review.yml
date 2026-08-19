@@ -25,7 +25,7 @@ jobs:
         with:
           repository: vishwahiremath4199/Ai-Review-agent
           path: ai-review-agent
-          ref: main
+          ref: test-ai-review
 
       - name: Setup Python
         uses: actions/setup-python@v5
