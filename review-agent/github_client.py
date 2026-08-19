@@ -3,8 +3,6 @@ GitHub client for fetching PR diffs and posting review comments.
 """
 
 import requests
-from typing import tuple
-import json
 from models import ReviewResult
 
 
